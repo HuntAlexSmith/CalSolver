@@ -6,6 +6,8 @@
 //		WRITE DESCRIPTION OF FILE HERE
 //*****************************************************************************
 
+#include "Stub.h"
+
 //*****************************************************************************
 //	Description
 //		WRITE DESCRIPTION OF FUNCTION HERE

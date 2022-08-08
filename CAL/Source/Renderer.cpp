@@ -12,6 +12,10 @@
 #include "glad/glad.h"
 #include <iostream>
 
+//*****************************************************************************
+//	Description
+//		Constructor for the Renderer class
+//*****************************************************************************
 Renderer::Renderer() : window_(nullptr)
 	, width_(1280)
 	, height_(720)
@@ -22,10 +26,18 @@ Renderer::Renderer() : window_(nullptr)
 {
 }
 
+//*****************************************************************************
+//	Description
+//		Destructor for the Renderer class
+//*****************************************************************************
 Renderer::~Renderer()
 {
 }
 
+//*****************************************************************************
+//	Description
+//		Initializes the Renderer object
+//*****************************************************************************
 void Renderer::Initialize()
 {
 	// Initialize SDL
@@ -88,6 +100,14 @@ void Renderer::Initialize()
 	isRunning_ = true;
 }
 
+//*****************************************************************************
+//	Description
+//		Updates the Renderer, rendering anything that has been requested to
+//		be rendered and processing inputs
+// 
+//	Param dt
+//		Delta time in between the last and current frame
+//*****************************************************************************
 void Renderer::Update(float dt)
 {
 	// Process inputs from user
@@ -107,14 +127,37 @@ void Renderer::Update(float dt)
 	SDL_GL_SwapWindow(window_);
 }
 
+//*****************************************************************************
+//	Description
+//		Shuts the Renderer down
+//*****************************************************************************
 void Renderer::Shutdown()
 {
 	// Delete context, destroy window, and quit SDL
-	SDL_GL_DeleteContext(glContext_);
-	SDL_DestroyWindow(window_);
+	if(glContext_)
+		SDL_GL_DeleteContext(glContext_);
+
+	if(window_)
+		SDL_DestroyWindow(window_);
+
 	SDL_Quit();
+
+	isRunning_ = false;
 }
 
+//*****************************************************************************
+//	Description
+//		Sets the background color of the renderer
+// 
+//	Param r
+//		The red value to set the background to
+// 
+//  Param g
+//		The green value to set the background to
+// 
+//  Param b
+//		The blue value to set the background to
+//*****************************************************************************
 void Renderer::SetBackColor(float r, float g, float b)
 {
 	backColor_.r = r;
@@ -123,6 +166,13 @@ void Renderer::SetBackColor(float r, float g, float b)
 	glClearColor(r, g, b, 1.0f);
 }
 
+//*****************************************************************************
+//	Description
+//		Getter for the current status of the renderer
+// 
+//	Return
+//		True if the renderer is running, false otherwise
+//*****************************************************************************
 bool Renderer::IsRunning()
 {
 	return isRunning_;

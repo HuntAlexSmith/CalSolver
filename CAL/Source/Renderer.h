@@ -1,5 +1,5 @@
 //*****************************************************************************
-//	Filename: Renderer.cpp
+//	Filename: Renderer.h
 //  Author:	  Hunter Smith
 //  Date:	  08/07/2022
 //  Description:
