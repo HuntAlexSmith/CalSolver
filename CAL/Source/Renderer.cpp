@@ -26,7 +26,6 @@ Renderer::~Renderer()
 {
 }
 
-// Member functions
 void Renderer::Initialize()
 {
 	// Initialize SDL
@@ -100,6 +99,9 @@ void Renderer::Update(float dt)
 
 	// Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Render things here
+
 
 	// Swap buffers
 	SDL_GL_SwapWindow(window_);

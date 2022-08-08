@@ -22,6 +22,7 @@ public:
 	void Initialize();
 	void Update(float dt);
 	void Shutdown();
+
 	void SetBackColor(float r, float g, float b);
 	bool IsRunning();
 
