@@ -9,12 +9,12 @@
 
 #include "GfxMath.h"
 
-glm::vec3 GfxMath::Point2D(float x, float y)
+glm::vec4 GfxMath::Point2D(float x, float y)
 {
-	return glm::vec3(x, y, 1.0f);
+	return glm::vec4(x, y, 0.0f, 1.0f);
 }
 
-glm::vec3 GfxMath::Vector2D(float x, float y)
+glm::vec4 GfxMath::Vector2D(float x, float y)
 {
-	return glm::vec3(x, y, 0.0f);
+	return glm::vec4(x, y, 0.0f, 0.0f);
 }

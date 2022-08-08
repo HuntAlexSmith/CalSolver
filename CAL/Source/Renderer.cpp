@@ -9,7 +9,8 @@
 //*****************************************************************************
 
 #include "Renderer.h"
-#include "glad/glad.h"
+#include "Mesh.h"
+#include "GfxMath.h"
 #include <iostream>
 
 //*****************************************************************************
@@ -23,6 +24,7 @@ Renderer::Renderer() : window_(nullptr)
 	, backColor_(1)
 	, isRunning_(false)
 	, inputEvent_()
+	, squareVao_(0)
 {
 }
 
@@ -98,6 +100,19 @@ void Renderer::Initialize()
 
 	// Set is running to true, everything initialized
 	isRunning_ = true;
+
+	// Now create the square mesh that we will use for everything
+	Mesh myMesh;
+
+	// Add vertices
+	myMesh.AddVertex(GfxMath::Point2D(-0.5f, -0.5f), glm::vec2(0.0f, 0.0f));
+	myMesh.AddVertex(GfxMath::Point2D(0.5f, -0.5f), glm::vec2(1.0f, 0.0f));
+	myMesh.AddVertex(GfxMath::Point2D(0.5f, 0.5f), glm::vec2(1.0f, 1.0f));
+	myMesh.AddVertex(GfxMath::Point2D(-0.5f, 0.5f), glm::vec2(0.0f, 1.0f));
+
+	// Add Faces
+	myMesh.AddFace(0, 1, 2);
+	myMesh.AddFace(0, 2, 3);
 }
 
 //*****************************************************************************

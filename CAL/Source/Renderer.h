@@ -10,6 +10,7 @@
 #pragma once
 
 #include "SDLi/SDL.h"
+#include "glad/glad.h"
 #include "glm/glm.hpp"
 
 class Renderer {
@@ -39,4 +40,7 @@ private:
 
 	// Is Running Check
 	bool isRunning_;
+
+	// We will only have one mesh, so we can just render that
+	GLuint squareVao_;
 };

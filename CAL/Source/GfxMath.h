@@ -12,7 +12,7 @@
 
 namespace GfxMath {
 
-	glm::vec3 Point2D(float x, float y);
+	glm::vec4 Point2D(float x, float y);
 
-	glm::vec3 Vector2D(float x, float y);
+	glm::vec4 Vector2D(float x, float y);
 };

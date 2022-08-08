@@ -29,7 +29,7 @@ public:
 	~Mesh();
 
 	// Member functions
-	void AddVertex(glm::vec3 point);
+	void AddVertex(glm::vec4 point, glm::vec2 uv);
 
 	void AddEdge(unsigned v1, unsigned v2);
 	void AddEdge(Edge edge);
@@ -37,9 +37,17 @@ public:
 	void AddFace(unsigned v1, unsigned v2, unsigned v3);
 	void AddFace(Face face);
 
+	glm::vec4* GetVertices();
+	glm::vec2* GetUV();
+	int GetVertexCount();
+
+	Face* GetFaces();
+	int GetFaceCount();
+
 private:
 
-	std::vector<glm::vec3> vertices_;
+	std::vector<glm::vec4> vertices_;
+	std::vector<glm::vec2> uv_;
 	std::vector<Edge> edges_;
 	std::vector<Face> faces_;
 

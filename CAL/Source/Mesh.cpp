@@ -31,9 +31,10 @@ Mesh::~Mesh()
 }
 
 // Member functions
-void Mesh::AddVertex(glm::vec3 point)
+void Mesh::AddVertex(glm::vec4 point, glm::vec2 uv)
 {
 	vertices_.push_back(point);
+	uv_.push_back(uv);
 }
 
 void Mesh::AddEdge(unsigned v1, unsigned v2)
@@ -56,6 +57,37 @@ void Mesh::AddFace(unsigned v1, unsigned v2, unsigned v3)
 void Mesh::AddFace(Face face)
 {
 	faces_.push_back(face);
+}
+
+glm::vec4* Mesh::GetVertices()
+{
+	if (vertices_.size() > 0)
+		return &vertices_[0];
+	return nullptr;
+}
+
+glm::vec2* Mesh::GetUV()
+{
+	if (uv_.size() > 0)
+		return &uv_[0];
+	return nullptr;
+}
+
+int Mesh::GetVertexCount()
+{
+	return vertices_.size();
+}
+
+Mesh::Face* Mesh::GetFaces()
+{
+	if (faces_.size() > 0)
+		return &faces_[0];
+	return nullptr;
+}
+
+int Mesh::GetFaceCount()
+{
+	return faces_.size();
 }
 
 //*****************************************************************************
