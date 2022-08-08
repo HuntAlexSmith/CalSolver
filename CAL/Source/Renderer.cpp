@@ -25,6 +25,7 @@ Renderer::Renderer() : window_(nullptr)
 	, isRunning_(false)
 	, inputEvent_()
 	, squareVao_(0)
+	, shader_(nullptr)
 {
 }
 
@@ -98,6 +99,14 @@ void Renderer::Initialize()
 	// Set Viewport size
 	glViewport(0, 0, width_, height_);
 
+	// Create the shader to use for rendering
+	shader_ = new Shader("Data/shader.vert", "Data/shader.frag");
+	if (shader_->Failed())
+	{
+		Shutdown();
+		return;
+	}
+
 	// Set is running to true, everything initialized
 	isRunning_ = true;
 
@@ -148,6 +157,9 @@ void Renderer::Update(float dt)
 //*****************************************************************************
 void Renderer::Shutdown()
 {
+	// Remember to delete the shader
+	delete shader_;
+
 	// Delete context, destroy window, and quit SDL
 	if(glContext_)
 		SDL_GL_DeleteContext(glContext_);

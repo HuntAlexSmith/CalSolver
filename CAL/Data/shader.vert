@@ -15,5 +15,5 @@ out vec2 vtexcoord;
 // The function
 void main(void) {
     gl_Position = position;
-    vtexcoord = texcoords;
+    vtexcoord = texcoord;
 }

@@ -9,8 +9,8 @@
 //*****************************************************************************
 #pragma once
 
+#include "Shader.h"
 #include "SDLi/SDL.h"
-#include "glad/glad.h"
 #include "glm/glm.hpp"
 
 class Renderer {
@@ -43,4 +43,7 @@ private:
 
 	// We will only have one mesh, so we can just render that
 	GLuint squareVao_;
+
+	// Shader to use for rendering
+	Shader* shader_;
 };

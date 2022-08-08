@@ -34,6 +34,9 @@
     <ClCompile Include="Source\Mesh.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Shader.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Renderer.h">
@@ -46,6 +49,9 @@
       <Filter>Source Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Source\Mesh.h">
+      <Filter>Source Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Shader.h">
       <Filter>Source Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
