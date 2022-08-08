@@ -22,6 +22,7 @@ public:
 	void Initialize();
 	void Update(float dt);
 	void Shutdown();
+	void SetBackColor(float r, float g, float b);
 	bool IsRunning();
 
 private:
@@ -30,6 +31,7 @@ private:
 	int width_;
 	int height_;
 	SDL_GLContext glContext_;
+	SDL_Event inputEvent_;
 
 	// Background Color
 	glm::vec3 backColor_;
