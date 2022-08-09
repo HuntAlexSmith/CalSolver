@@ -122,6 +122,54 @@ void Renderer::Initialize()
 	// Add Faces
 	myMesh.AddFace(0, 1, 2);
 	myMesh.AddFace(0, 2, 3);
+
+	// The Vertex, Texture, and Element Buffer Objects
+	GLuint vbo, tbo, ebo;
+
+	// Create and upload data to the Vertex Buffer
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * myMesh.GetVertexCount(), myMesh.GetVertices(), GL_STATIC_DRAW);
+
+	// Create and upload data to the Texture Buffer
+	glGenBuffers(1, &tbo);
+	glBindBuffer(GL_ARRAY_BUFFER, tbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * myMesh.GetVertexCount(), myMesh.GetUV(), GL_STATIC_DRAW);
+
+	// Create and upload data to the Element Buffer
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Mesh::Face) * myMesh.GetFaceCount(), myMesh.GetFaces(), GL_STATIC_DRAW);
+
+	// Now create and bind necessary things to the VAO
+	glGenVertexArrays(1, &squareVao_);
+	glBindVertexArray(squareVao_);
+
+	// Get Position Attrib and enable it
+	GLint posAttrib = shader_->GetAttribLocation("position");
+	if (posAttrib < 0) {
+		std::cout << "Failed to find attribute" << std::endl;
+		return;
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(posAttrib, 4, GL_FLOAT, false, 0, 0);
+	glEnableVertexAttribArray(posAttrib);
+
+	// Get tex coord attrib and enable it
+	GLint texAttrib = shader_->GetAttribLocation("texcoord");
+	if (texAttrib < 0) {
+		std::cout << "Failed to find attribute" << std::endl;
+		return;
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, tbo);
+	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, false, 0, 0);
+	glEnableVertexAttribArray(texAttrib);
+
+	// Remember to bind the ebo before finishing
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+	// Unbind the Vertex Array
+	glBindVertexArray(0);
 }
 
 //*****************************************************************************
@@ -145,7 +193,9 @@ void Renderer::Update(float dt)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Render things here
-
+	glBindVertexArray(squareVao_);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 
 	// Swap buffers
 	SDL_GL_SwapWindow(window_);
@@ -157,6 +207,10 @@ void Renderer::Update(float dt)
 //*****************************************************************************
 void Renderer::Shutdown()
 {
+	// Delete the vao
+	if (squareVao_)
+		glDeleteVertexArrays(1, &squareVao_);
+
 	// Remember to delete the shader
 	delete shader_;
 
