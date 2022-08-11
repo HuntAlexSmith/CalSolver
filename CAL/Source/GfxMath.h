@@ -15,4 +15,6 @@ namespace GfxMath {
 	glm::vec4 Point2D(float x, float y);
 
 	glm::vec4 Vector2D(float x, float y);
+
+	glm::mat4 AffineInverse(const glm::mat4& affine);
 };

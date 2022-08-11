@@ -14,6 +14,6 @@ out vec2 vtexcoord;
 
 // The function
 void main(void) {
-    gl_Position = position;
+    gl_Position = camToNDC * worldToCam * objToWorld * position;
     vtexcoord = texcoord;
 }

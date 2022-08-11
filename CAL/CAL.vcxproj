@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\GfxMath.cpp" />
     <ClCompile Include="Source\glad.c" />
     <ClCompile Include="Source\Main.cpp" />
@@ -141,6 +142,7 @@
     <ClCompile Include="Source\Stub.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\GfxMath.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\Renderer.h" />

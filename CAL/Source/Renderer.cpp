@@ -26,6 +26,7 @@ Renderer::Renderer() : window_(nullptr)
 	, inputEvent_()
 	, squareVao_(0)
 	, shader_(nullptr)
+	, camera_(Camera(20.0f, 1280.0f/720.0f, GfxMath::Point2D(0, 0)))
 {
 }
 
@@ -192,10 +193,27 @@ void Renderer::Update(float dt)
 	// Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Remember to use the program
+	shader_->Use();
+
+	// Get Uniforms and upload values
+	GLint uObjToWorld = shader_->GetUniformLocation("objToWorld");
+	GLint uWorldToCam = shader_->GetUniformLocation("worldToCam");
+	GLint uCamToNDC = shader_->GetUniformLocation("camToNDC");
+
+	// Upload the data
+	glm::mat4 objToWorld(1);
+	glUniformMatrix4fv(uObjToWorld, 1, false, &objToWorld[0][0]);
+	glUniformMatrix4fv(uWorldToCam, 1, false, &camera_.WorldToCam()[0][0]);
+	glUniformMatrix4fv(uCamToNDC, 1, false, &camera_.CamToNDC()[0][0]);
+
 	// Render things here
 	glBindVertexArray(squareVao_);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	// Assert just in case
+	assert(glGetError() == GL_NO_ERROR);
 
 	// Swap buffers
 	SDL_GL_SwapWindow(window_);

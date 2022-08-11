@@ -9,6 +9,7 @@
 //*****************************************************************************
 #pragma once
 
+#include "Camera.h"
 #include "Shader.h"
 #include "SDLi/SDL.h"
 #include "glm/glm.hpp"
@@ -46,4 +47,7 @@ private:
 
 	// Shader to use for rendering
 	Shader* shader_;
+
+	// Camera for rendering
+	Camera camera_;
 };
