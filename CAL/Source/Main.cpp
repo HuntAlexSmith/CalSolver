@@ -38,6 +38,9 @@ int main(int argc, char* argv[]) {
 	// Initialize the renderer
 	myRenderer.Initialize();
 
+	// Create textures here
+	Texture* testTex = new Texture("Test Tile", "Assets/Done/Tile_1.png");
+
 	// Create objects here
 	Object* testObject = new Object();
 	testObject->AddPosition(GfxMath::Point2D(0, 0));
@@ -45,6 +48,10 @@ int main(int argc, char* argv[]) {
 	testObject->AddPosition(GfxMath::Point2D(1, 1));
 	testObject->SetTint(glm::vec3(1.0f, 0.4f, 0.5f));
 	// testObject->SetAlpha(0.1f);
+
+	Object* testObject2 = new Object();
+	testObject2->AddPosition(GfxMath::Point2D(5, 5));
+	testObject2->SetTexture(testTex);
 
 	while (myRenderer.IsRunning())
 	{
@@ -64,6 +71,7 @@ int main(int argc, char* argv[]) {
 
 		// Render objects here
 		myRenderer.Render(testObject);
+		myRenderer.Render(testObject2);
 
 		// Update the renderer
 		myRenderer.Update(dt);
@@ -71,6 +79,10 @@ int main(int argc, char* argv[]) {
 
 	// Remember to delete all objects
 	delete testObject;
+	delete testObject2;
+
+	// Delete all textures
+	delete testTex;
 
 	// Remember to shutdown renderer
 	myRenderer.Shutdown();

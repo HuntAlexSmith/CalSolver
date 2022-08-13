@@ -203,11 +203,23 @@ void Renderer::Update(float dt)
 	GLint uCamToNDC = shader_->GetUniformLocation("camToNDC");
 	GLint uTint = shader_->GetUniformLocation("tint");
 	GLint uAlpha = shader_->GetUniformLocation("alpha");
+	GLint uSampler = shader_->GetUniformLocation("usamp");
+
+	// Check for a texture to render
 
 	while (!renderQueue_.empty()) {
 		// Get the current data
 		RenderData curData = renderQueue_.front();
 		renderQueue_.pop();
+
+		// Check for texture
+		Texture* tex = curData.texture;
+		if (tex) {
+			glBindTexture(GL_TEXTURE_2D, tex->TexGL());
+		}
+		else {
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 
 		// Upload Uniforms
 		glUniformMatrix4fv(uObjToWorld, 1, false, &curData.objToWorld[0][0]);
@@ -292,13 +304,19 @@ void Renderer::Render(Object* obj)
 	int posCount = obj->GetPosCount();
 	const glm::vec4* positions = obj->GetPos();
 	const glm::vec3 tint = obj->GetTint();
-	const float alpha = obj->GetAlpha();
+	float alpha = obj->GetAlpha();
+	Texture* tex = obj->GetTexture();
 	for (int i = 0; i < posCount; ++i)
 	{
-		glm::mat4 objToWorld = glm::mat4(1);
-		objToWorld[3][0] = positions[i].x;
-		objToWorld[3][1] = positions[i].y;
-		RenderData dataToAdd(objToWorld, positions[i], tint, alpha);
+		glm::mat4 oTW = glm::mat4(1);
+		oTW[3][0] = positions[i].x;
+		oTW[3][1] = positions[i].y;
+		RenderData dataToAdd;
+		dataToAdd.objToWorld = oTW;
+		dataToAdd.position = positions[i];
+		dataToAdd.tint = tint;
+		dataToAdd.alpha = alpha;
+		dataToAdd.texture = tex;
 		renderQueue_.push(dataToAdd);
 	}
 }

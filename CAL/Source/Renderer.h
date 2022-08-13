@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Camera.h"
+#include "Texture.h"
 #include "Object.h"
 #include "Shader.h"
 #include "SDLi/SDL.h"
@@ -24,19 +25,22 @@ public:
 		glm::vec4 position;
 		glm::vec3 tint;
 		float alpha;
+		Texture* texture;
 
 		RenderData() :
 			objToWorld(glm::mat4(1))
 			, position(glm::vec4(0))
 			, tint(glm::vec3(0))
 			, alpha(1.0f)
+			, texture(nullptr)
 		{}
 
-		RenderData(glm::mat4 oTW, glm::vec4 pos, glm::vec3 t, float a) :
+		RenderData(glm::mat4 oTW, glm::vec4 pos, glm::vec3 t, float a, Texture* tex) :
 			objToWorld(oTW)
 			, position(pos)
 			, tint(t)
 			, alpha(a)
+			, texture(tex)
 		{}
 	};
 

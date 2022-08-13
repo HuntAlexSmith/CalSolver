@@ -14,6 +14,7 @@ Object::Object() :
 	positions_()
 	, tint_(glm::vec3(0))
 	, alpha_(1.0f)
+	, texture_(nullptr)
 {
 }
 
@@ -55,6 +56,16 @@ void Object::SetTint(glm::vec3 tint)
 void Object::SetAlpha(float alpha)
 {
 	alpha_ = alpha;
+}
+
+Texture* Object::GetTexture()
+{
+	return texture_;
+}
+
+void Object::SetTexture(Texture* tex)
+{
+	texture_ = tex;
 }
 
 //*****************************************************************************
