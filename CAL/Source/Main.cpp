@@ -38,6 +38,14 @@ int main(int argc, char* argv[]) {
 	// Initialize the renderer
 	myRenderer.Initialize();
 
+	// Create objects here
+	Object* testObject = new Object();
+	testObject->AddPosition(GfxMath::Point2D(0, 0));
+	testObject->AddPosition(GfxMath::Point2D(0, 1));
+	testObject->AddPosition(GfxMath::Point2D(1, 1));
+	testObject->SetTint(glm::vec3(1.0f, 0.4f, 0.5f));
+	// testObject->SetAlpha(0.1f);
+
 	while (myRenderer.IsRunning())
 	{
 		// Calculate dt
@@ -54,9 +62,15 @@ int main(int argc, char* argv[]) {
 		// Set background color
 		myRenderer.SetBackColor(redVal, greenVal, blueVal);
 
+		// Render objects here
+		myRenderer.Render(testObject);
+
 		// Update the renderer
 		myRenderer.Update(dt);
 	}
+
+	// Remember to delete all objects
+	delete testObject;
 
 	// Remember to shutdown renderer
 	myRenderer.Shutdown();

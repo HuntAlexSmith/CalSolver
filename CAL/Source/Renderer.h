@@ -10,12 +10,36 @@
 #pragma once
 
 #include "Camera.h"
+#include "Object.h"
 #include "Shader.h"
 #include "SDLi/SDL.h"
 #include "glm/glm.hpp"
+#include <queue>
 
 class Renderer {
 public:
+	// Render Data
+	struct RenderData {
+		glm::mat4 objToWorld;
+		glm::vec4 position;
+		glm::vec3 tint;
+		float alpha;
+
+		RenderData() :
+			objToWorld(glm::mat4(1))
+			, position(glm::vec4(0))
+			, tint(glm::vec3(0))
+			, alpha(1.0f)
+		{}
+
+		RenderData(glm::mat4 oTW, glm::vec4 pos, glm::vec3 t, float a) :
+			objToWorld(oTW)
+			, position(pos)
+			, tint(t)
+			, alpha(a)
+		{}
+	};
+
 	// Constructor and destructor of the renderer
 	Renderer();
 	~Renderer();
@@ -27,6 +51,8 @@ public:
 
 	void SetBackColor(float r, float g, float b);
 	bool IsRunning();
+
+	void Render(Object* obj);
 
 private:
 	// SDL things
@@ -50,4 +76,7 @@ private:
 
 	// Camera for rendering
 	Camera camera_;
+
+	// Render queue
+	std::queue<RenderData> renderQueue_;
 };

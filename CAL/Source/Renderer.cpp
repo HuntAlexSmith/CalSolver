@@ -27,6 +27,7 @@ Renderer::Renderer() : window_(nullptr)
 	, squareVao_(0)
 	, shader_(nullptr)
 	, camera_(Camera(20.0f, 1280.0f/720.0f, GfxMath::Point2D(0, 0)))
+	, renderQueue_()
 {
 }
 
@@ -200,17 +201,26 @@ void Renderer::Update(float dt)
 	GLint uObjToWorld = shader_->GetUniformLocation("objToWorld");
 	GLint uWorldToCam = shader_->GetUniformLocation("worldToCam");
 	GLint uCamToNDC = shader_->GetUniformLocation("camToNDC");
+	GLint uTint = shader_->GetUniformLocation("tint");
+	GLint uAlpha = shader_->GetUniformLocation("alpha");
 
-	// Upload the data
-	glm::mat4 objToWorld(1);
-	glUniformMatrix4fv(uObjToWorld, 1, false, &objToWorld[0][0]);
-	glUniformMatrix4fv(uWorldToCam, 1, false, &camera_.WorldToCam()[0][0]);
-	glUniformMatrix4fv(uCamToNDC, 1, false, &camera_.CamToNDC()[0][0]);
+	while (!renderQueue_.empty()) {
+		// Get the current data
+		RenderData curData = renderQueue_.front();
+		renderQueue_.pop();
 
-	// Render things here
-	glBindVertexArray(squareVao_);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+		// Upload Uniforms
+		glUniformMatrix4fv(uObjToWorld, 1, false, &curData.objToWorld[0][0]);
+		glUniformMatrix4fv(uWorldToCam, 1, false, &camera_.WorldToCam()[0][0]);
+		glUniformMatrix4fv(uCamToNDC, 1, false, &camera_.CamToNDC()[0][0]);
+		glUniform3fv(uTint, 1, &curData.tint[0]);
+		glUniform1f(uAlpha, curData.alpha);
+
+		// Do the render
+		glBindVertexArray(squareVao_);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
 
 	// Assert just in case
 	assert(glGetError() == GL_NO_ERROR);
@@ -275,4 +285,20 @@ void Renderer::SetBackColor(float r, float g, float b)
 bool Renderer::IsRunning()
 {
 	return isRunning_;
+}
+
+void Renderer::Render(Object* obj)
+{
+	int posCount = obj->GetPosCount();
+	const glm::vec4* positions = obj->GetPos();
+	const glm::vec3 tint = obj->GetTint();
+	const float alpha = obj->GetAlpha();
+	for (int i = 0; i < posCount; ++i)
+	{
+		glm::mat4 objToWorld = glm::mat4(1);
+		objToWorld[3][0] = positions[i].x;
+		objToWorld[3][1] = positions[i].y;
+		RenderData dataToAdd(objToWorld, positions[i], tint, alpha);
+		renderQueue_.push(dataToAdd);
+	}
 }
