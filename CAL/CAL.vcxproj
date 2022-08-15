@@ -140,6 +140,7 @@
     <ClCompile Include="Source\Object.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
+    <ClCompile Include="Source\Solver.cpp" />
     <ClCompile Include="Source\stb.cpp" />
     <ClCompile Include="Source\Stub.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Source\Object.h" />
     <ClInclude Include="Source\Renderer.h" />
     <ClInclude Include="Source\Shader.h" />
+    <ClInclude Include="Source\Solver.h" />
     <ClInclude Include="Source\Stub.h" />
     <ClInclude Include="Source\Texture.h" />
   </ItemGroup>
