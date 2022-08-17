@@ -27,6 +27,7 @@ public:
 	int GetBoardCount();
 
 	Object** GetPieces();
+	int GetPieceCount();
 
 private:
 

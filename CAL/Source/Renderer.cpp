@@ -301,6 +301,7 @@ bool Renderer::IsRunning()
 
 void Renderer::Render(Object* obj)
 {
+	glm::vec4 worldPos = obj->GetWorldPos();
 	int posCount = obj->GetPosCount();
 	const glm::vec4* positions = obj->GetPos();
 	const glm::vec3 tint = obj->GetTint();
@@ -309,8 +310,8 @@ void Renderer::Render(Object* obj)
 	for (int i = 0; i < posCount; ++i)
 	{
 		glm::mat4 oTW = glm::mat4(1);
-		oTW[3][0] = positions[i].x;
-		oTW[3][1] = positions[i].y;
+		oTW[3][0] = worldPos.x + positions[i].x;
+		oTW[3][1] = worldPos.y + positions[i].y;
 		RenderData dataToAdd;
 		dataToAdd.objToWorld = oTW;
 		dataToAdd.position = positions[i];

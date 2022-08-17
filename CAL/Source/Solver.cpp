@@ -73,6 +73,7 @@ void Solver::Initialize()
 	// Now generate all the tile objects
 	int curTex = 0;
 
+	// Set all the textures
 	for (int j = HEIGHT - 1; j >= 0; --j) {
 		for (int i = 0; i < WIDTH; ++i) {
 			if (board_[i][j] > -1) {
@@ -84,10 +85,151 @@ void Solver::Initialize()
 			}
 		}
 	}
+
+	// Create the objects and give them their needed shape
+
+	// The colors we will use
+	glm::vec3 red(1, 0, 0);
+	glm::vec3 green(0, 1, 0);
+	glm::vec3 blue(0, 0, 1);
+	glm::vec3 yellow(1, 1, 0);
+	glm::vec3 cyan(0, 1, 1);
+	glm::vec3 magenta(1, 0, 1);
+	glm::vec3 color1(0.2f, 0.5f, 0.8f);
+	glm::vec3 color2(0.8f, 0.5f, 0.2f);
+	glm::vec3 color3(0.5f, 0.2f, 0.8f);
+	glm::vec3 color4(0.8f, 0.2f, 0.5f);
+	
+	// **
+	//** 
+	Object* smallS = new Object();
+	smallS->AddPosition(GfxMath::Point2D(0, 0));
+	smallS->AddPosition(GfxMath::Point2D(1, 0));
+	smallS->AddPosition(GfxMath::Point2D(1, 1));
+	smallS->AddPosition(GfxMath::Point2D(2, 1));
+	smallS->SetTint(red);
+	smallS->SetWorldPos(GfxMath::Point2D(-10, 8));
+
+	//  *
+	//***
+	Object* smallL = new Object();
+	smallL->AddPosition(GfxMath::Point2D(0, 0));
+	smallL->AddPosition(GfxMath::Point2D(1, 0));
+	smallL->AddPosition(GfxMath::Point2D(2, 0));
+	smallL->AddPosition(GfxMath::Point2D(2, 1));
+	smallL->SetTint(green);
+	smallL->SetWorldPos(GfxMath::Point2D(-10, 5));
+
+	//****
+	Object* iPiece = new Object();
+	iPiece->AddPosition(GfxMath::Point2D(0, 0));
+	iPiece->AddPosition(GfxMath::Point2D(1, 0));
+	iPiece->AddPosition(GfxMath::Point2D(2, 0));
+	iPiece->AddPosition(GfxMath::Point2D(3, 0));
+	iPiece->SetTint(blue);
+	iPiece->SetWorldPos(GfxMath::Point2D(-10, 2));
+
+	// **
+	//***
+	Object* block = new Object();
+	block->AddPosition(GfxMath::Point2D(0, 0));
+	block->AddPosition(GfxMath::Point2D(1, 0));
+	block->AddPosition(GfxMath::Point2D(1, 1));
+	block->AddPosition(GfxMath::Point2D(2, 0));
+	block->AddPosition(GfxMath::Point2D(2, 1));
+	block->SetTint(yellow);
+	block->SetWorldPos(GfxMath::Point2D(-10, -1));
+
+	//   *
+	//****
+	Object* longL = new Object();
+	longL->AddPosition(GfxMath::Point2D(0, 0));
+	longL->AddPosition(GfxMath::Point2D(1, 0));
+	longL->AddPosition(GfxMath::Point2D(2, 0));
+	longL->AddPosition(GfxMath::Point2D(3, 0));
+	longL->AddPosition(GfxMath::Point2D(3, 1));
+	longL->SetTint(cyan);
+	longL->SetWorldPos(GfxMath::Point2D(-10, -4));
+
+	//***
+	//* *
+	Object* arch = new Object();
+	arch->AddPosition(GfxMath::Point2D(0, 0));
+	arch->AddPosition(GfxMath::Point2D(0, 1));
+	arch->AddPosition(GfxMath::Point2D(1, 1));
+	arch->AddPosition(GfxMath::Point2D(2, 1));
+	arch->AddPosition(GfxMath::Point2D(2, 0));
+	arch->SetTint(magenta);
+	arch->SetWorldPos(GfxMath::Point2D(-5, 8));
+
+	// ***
+	//**
+	Object* funky = new Object();
+	funky->AddPosition(GfxMath::Point2D(0, 0));
+	funky->AddPosition(GfxMath::Point2D(1, 0));
+	funky->AddPosition(GfxMath::Point2D(1, 1));
+	funky->AddPosition(GfxMath::Point2D(2, 1));
+	funky->AddPosition(GfxMath::Point2D(3, 1));
+	funky->SetTint(color1);
+	funky->SetWorldPos(GfxMath::Point2D(-5, 5));
+
+	//  *
+	//***
+	//*
+	Object* bigS = new Object();
+	bigS->AddPosition(GfxMath::Point2D(0, 0));
+	bigS->AddPosition(GfxMath::Point2D(0, 1));
+	bigS->AddPosition(GfxMath::Point2D(1, 1));
+	bigS->AddPosition(GfxMath::Point2D(2, 1));
+	bigS->AddPosition(GfxMath::Point2D(2, 2));
+	bigS->SetTint(color2);
+	bigS->SetWorldPos(GfxMath::Point2D(-5, 1));
+
+	// *
+	// *
+	//***
+	Object* tPiece = new Object();
+	tPiece->AddPosition(GfxMath::Point2D(0, 0));
+	tPiece->AddPosition(GfxMath::Point2D(1, 0));
+	tPiece->AddPosition(GfxMath::Point2D(2, 0));
+	tPiece->AddPosition(GfxMath::Point2D(1, 1));
+	tPiece->AddPosition(GfxMath::Point2D(1, 2));
+	tPiece->SetTint(color3);
+	tPiece->SetWorldPos(GfxMath::Point2D(-5, -3));
+
+	//  *
+	//  *
+	//***
+	Object* corner = new Object();
+	corner->AddPosition(GfxMath::Point2D(0, 0));
+	corner->AddPosition(GfxMath::Point2D(1, 0));
+	corner->AddPosition(GfxMath::Point2D(2, 0));
+	corner->AddPosition(GfxMath::Point2D(2, 1));
+	corner->AddPosition(GfxMath::Point2D(2, 2));
+	corner->SetTint(color4);
+	corner->SetWorldPos(GfxMath::Point2D(-5, -7));
+
+	// Now add all the pieces to the vector
+	pieces_.push_back(smallS);
+	pieces_.push_back(smallL);
+	pieces_.push_back(iPiece);
+	pieces_.push_back(block);
+	pieces_.push_back(longL);
+	pieces_.push_back(arch);
+	pieces_.push_back(funky);
+	pieces_.push_back(bigS);
+	pieces_.push_back(tPiece);
+	pieces_.push_back(corner);
 }
 
 void Solver::Shutdown()
 {
+	// Delete all the objects
+	for (Object* obj : pieces_) {
+		delete obj;
+	}
+	pieces_.clear();
+
 	// Make sure to delete everything
 	int objCount = tiles_.size();
 	for (int i = 0; i < objCount; ++i) {
@@ -116,7 +258,15 @@ int Solver::GetBoardCount()
 
 Object** Solver::GetPieces()
 {
+	if (pieces_.size() > 0) {
+		return &pieces_[0];
+	}
 	return nullptr;
+}
+
+int Solver::GetPieceCount()
+{
+	return pieces_.size();
 }
 
 //*****************************************************************************

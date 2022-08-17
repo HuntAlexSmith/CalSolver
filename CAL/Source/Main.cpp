@@ -45,6 +45,8 @@ int main(int argc, char* argv[]) {
 	// Initialize the solver
 	mySolver.Initialize();
 
+	// Create objects here
+
 	// Set background color
 	myRenderer.SetBackColor(0.5f, 0.5f, 0.5f);
 
@@ -62,10 +64,21 @@ int main(int argc, char* argv[]) {
 		for (int i = 0; i < tileCount; ++i) {
 			myRenderer.Render(boardTiles[i]);
 		}
+
+		// Get all the pieces
+		Object** pieces = mySolver.GetPieces();
+		int pieceCount = mySolver.GetPieceCount();
+		for (int i = 0; i < pieceCount; ++i) {
+			myRenderer.Render(pieces[i]);
+		}
+
+		// Render the objects
 		
 		// Update the renderer
 		myRenderer.Update(dt);
 	}
+
+	// Delete objects here
 
 	// Remember to shutdown the solver
 	mySolver.Shutdown();

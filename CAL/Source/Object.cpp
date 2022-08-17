@@ -12,6 +12,7 @@
 // Constructor and Destructor
 Object::Object() : 
 	positions_()
+	, worldPos_(GfxMath::Point2D(0, 0))
 	, tint_(glm::vec3(0))
 	, alpha_(1.0f)
 	, texture_(nullptr)
@@ -28,6 +29,11 @@ const glm::vec4* Object::GetPos()
 	if (positions_.size() > 0)
 		return &positions_[0];
 	return nullptr;
+}
+
+const glm::vec4 Object::GetWorldPos()
+{
+	return worldPos_;
 }
 
 const int Object::GetPosCount()
@@ -49,6 +55,12 @@ void Object::AddPosition(glm::vec4 pos)
 {
 	positions_.push_back(pos);
 }
+
+void Object::SetWorldPos(glm::vec4 worldPos)
+{
+	worldPos_ = worldPos;
+}
+
 void Object::SetTint(glm::vec3 tint)
 {
 	tint_ = tint;
