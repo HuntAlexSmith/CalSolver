@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 		// Calculate dt
 		lastTick = curTick;
 		curTick = SDL_GetTicks();
-		dt = (curTick - lastTick) / 1000.0f;
+		dt = static_cast<float>(curTick - lastTick) / 1000.0f;
 		glm::clamp(dt, 0.0f, 0.125f);
 
 		// Get all the tiles

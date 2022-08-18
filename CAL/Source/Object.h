@@ -32,6 +32,8 @@ public:
 	void SetAlpha(float alpha);
 	void SetTexture(Texture* tex);
 
+	void Rotate90();
+
 private:
 
 	// The full positioning of the piece
@@ -44,5 +46,8 @@ private:
 	glm::vec3 tint_;
 	float alpha_;
 	Texture* texture_;
+
+	// Current rotation
+	int curRot_;
 
 };

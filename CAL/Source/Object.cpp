@@ -8,6 +8,7 @@
 //*****************************************************************************
 
 #include "Object.h"
+#include <cmath>
 
 // Constructor and Destructor
 Object::Object() : 
@@ -16,6 +17,7 @@ Object::Object() :
 	, tint_(glm::vec3(0))
 	, alpha_(1.0f)
 	, texture_(nullptr)
+	, curRot_(0)
 {
 }
 
@@ -78,6 +80,32 @@ Texture* Object::GetTexture()
 void Object::SetTexture(Texture* tex)
 {
 	texture_ = tex;
+}
+
+void Object::Rotate90()
+{
+	// Generate a rotation matrix
+	float rad90 = glm::radians(90.0f);
+	glm::mat4 rotMat(1);
+	rotMat[0][0] = cosf(rad90);
+	rotMat[0][1] = sinf(rad90);
+	rotMat[1][0] = -sinf(rad90);
+	rotMat[1][1] = cosf(rad90);
+
+	// Iterate over all positions and rotate them
+	int posCount = positions_.size();
+	for (int i = 0; i < posCount; ++i) {
+		glm::vec4 newPos = rotMat * positions_[i];
+		newPos.x = round(newPos.x);
+		newPos.y = round(newPos.y);
+		positions_[i] = newPos;
+	}
+
+	// Increment current rotation
+	curRot_ += 90;
+	if (curRot_ >= 360) {
+		curRot_ = 0;
+	}
 }
 
 //*****************************************************************************
