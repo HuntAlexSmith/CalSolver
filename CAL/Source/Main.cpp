@@ -72,11 +72,13 @@ int main(int argc, char* argv[]) {
 		}
 
 		// Get all the pieces
+		/*
 		Object** pieces = mySolver.GetPieces();
 		int pieceCount = mySolver.GetPieceCount();
 		for (int i = 0; i < pieceCount; ++i) {
 			myRenderer.Render(pieces[i]);
 		}
+		*/
 
 		// Get all the placed pieces
 		Object** placed = mySolver.GetPlacedPieces();
@@ -92,7 +94,7 @@ int main(int argc, char* argv[]) {
 
 		// Initiate the Solve
 		if(!solveDone)
-			solveDone = mySolver.Solve(Solver::Month::JUN, 13, Solver::DayOfWeek::WED);
+			solveDone = mySolver.Solve(Solver::Month::AUG, 29, Solver::DayOfWeek::MON);
 	}
 
 	// Delete objects here

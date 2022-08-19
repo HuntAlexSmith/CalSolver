@@ -9,6 +9,8 @@
 #include "Solver.h"
 #include "glm/glm.hpp"
 #include <iostream>
+#include <algorithm>
+#include <random>
 #include <exception>
 
 static glm::ivec2 invalidPositions[6] = {
@@ -236,6 +238,12 @@ void Solver::Initialize()
 	pieces_.push_back(bigS);
 	pieces_.push_back(tPiece);
 	pieces_.push_back(corner);
+
+	/*
+	std::random_device rd;
+	auto rng = std::default_random_engine(rd());
+	std::shuffle(std::begin(pieces_), std::end(pieces_), rng);
+	*/
 }
 
 void Solver::Shutdown()
@@ -323,7 +331,7 @@ bool Solver::Solve(Month month, unsigned int day, DayOfWeek dayOfWeek)
 		}
 	}
 
-	else if (month % 2 == 0) {
+	else if (month % 2 == 1) {
 		if (day > 30) {
 			std::cout << "Day Invalid" << std::endl;
 			return false;
@@ -421,13 +429,12 @@ bool Solver::SolveRec()
 	// Increment recursion
 	++recDepth_;
 
-	if (recDepth_ % 100 == 0) {
-		std::cout << "Solving..." << std::endl;
+	/*
+	if (recDepth_ == 10000) {
+		RenderPlaced();
+		recDepth_ = 0;
 	}
-
-	if (recDepth_ > 1000000000) {
-		throw std::runtime_error("Recursion went for too long");
-	}
+	*/
 
 	// End check for recursion
 	if (pieces_.empty())
