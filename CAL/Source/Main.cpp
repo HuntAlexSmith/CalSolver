@@ -27,6 +27,9 @@ Uint32 lastTick = 0;
 Uint32 curTick = 0;
 float dt = 0;
 
+// Solve flag
+bool solveDone = false;
+
 // All textures
 std::vector<Texture*> textures;
 
@@ -38,6 +41,9 @@ int main(int argc, char* argv[]) {
 
 	// Make sure the solver exists
 	Solver mySolver;
+
+	// Give renderer to solver
+	mySolver.SetRenderer(&myRenderer);
 
 	// Initialize the renderer
 	myRenderer.Initialize();
@@ -72,10 +78,21 @@ int main(int argc, char* argv[]) {
 			myRenderer.Render(pieces[i]);
 		}
 
+		// Get all the placed pieces
+		Object** placed = mySolver.GetPlacedPieces();
+		int placedCount = mySolver.GetPlacedPieceCount();
+		for (int i = 0; i < placedCount; ++i) {
+			myRenderer.Render(placed[i]);
+		}
+
 		// Render the objects
 		
 		// Update the renderer
 		myRenderer.Update(dt);
+
+		// Initiate the Solve
+		if(!solveDone)
+			solveDone = mySolver.Solve(Solver::Month::JUN, 13, Solver::DayOfWeek::WED);
 	}
 
 	// Delete objects here

@@ -8,6 +8,8 @@
 
 #include "Solver.h"
 #include "glm/glm.hpp"
+#include <iostream>
+#include <exception>
 
 static glm::ivec2 invalidPositions[6] = {
 	glm::ivec2(0, 0),
@@ -21,7 +23,11 @@ static glm::ivec2 invalidPositions[6] = {
 Solver::Solver() :
 	tiles_()
 	, pieces_()
+	, placed_()
 	, board_{0}
+	, boardMax_(WIDTH*HEIGHT)
+	, recDepth_(0)
+	, renderer_(nullptr)
 {
 }
 
@@ -99,7 +105,7 @@ void Solver::Initialize()
 	glm::vec3 color2(0.8f, 0.5f, 0.2f);
 	glm::vec3 color3(0.5f, 0.2f, 0.8f);
 	glm::vec3 color4(0.8f, 0.2f, 0.5f);
-	
+
 	// **
 	//** 
 	Object* smallS = new Object();
@@ -109,6 +115,7 @@ void Solver::Initialize()
 	smallS->AddPosition(GfxMath::Point2D(2, 1));
 	smallS->SetTint(red);
 	smallS->SetWorldPos(GfxMath::Point2D(-10, 8));
+	smallS->SetID(1);
 
 	//  *
 	//***
@@ -119,6 +126,7 @@ void Solver::Initialize()
 	smallL->AddPosition(GfxMath::Point2D(2, 1));
 	smallL->SetTint(green);
 	smallL->SetWorldPos(GfxMath::Point2D(-10, 5));
+	smallL->SetID(2);
 
 	//****
 	Object* iPiece = new Object();
@@ -128,6 +136,7 @@ void Solver::Initialize()
 	iPiece->AddPosition(GfxMath::Point2D(3, 0));
 	iPiece->SetTint(blue);
 	iPiece->SetWorldPos(GfxMath::Point2D(-10, 2));
+	iPiece->SetID(3);
 
 	// **
 	//***
@@ -139,6 +148,7 @@ void Solver::Initialize()
 	block->AddPosition(GfxMath::Point2D(2, 1));
 	block->SetTint(yellow);
 	block->SetWorldPos(GfxMath::Point2D(-10, -1));
+	block->SetID(4);
 
 	//   *
 	//****
@@ -150,6 +160,7 @@ void Solver::Initialize()
 	longL->AddPosition(GfxMath::Point2D(3, 1));
 	longL->SetTint(cyan);
 	longL->SetWorldPos(GfxMath::Point2D(-10, -4));
+	longL->SetID(5);
 
 	//***
 	//* *
@@ -161,6 +172,7 @@ void Solver::Initialize()
 	arch->AddPosition(GfxMath::Point2D(2, 0));
 	arch->SetTint(magenta);
 	arch->SetWorldPos(GfxMath::Point2D(-5, 8));
+	arch->SetID(6);
 
 	// ***
 	//**
@@ -172,6 +184,7 @@ void Solver::Initialize()
 	funky->AddPosition(GfxMath::Point2D(3, 1));
 	funky->SetTint(color1);
 	funky->SetWorldPos(GfxMath::Point2D(-5, 5));
+	funky->SetID(7);
 
 	//  *
 	//***
@@ -184,6 +197,7 @@ void Solver::Initialize()
 	bigS->AddPosition(GfxMath::Point2D(2, 2));
 	bigS->SetTint(color2);
 	bigS->SetWorldPos(GfxMath::Point2D(-5, 1));
+	bigS->SetID(8);
 
 	// *
 	// *
@@ -196,6 +210,7 @@ void Solver::Initialize()
 	tPiece->AddPosition(GfxMath::Point2D(1, 2));
 	tPiece->SetTint(color3);
 	tPiece->SetWorldPos(GfxMath::Point2D(-5, -3));
+	tPiece->SetID(9);
 
 	//  *
 	//  *
@@ -208,6 +223,7 @@ void Solver::Initialize()
 	corner->AddPosition(GfxMath::Point2D(2, 2));
 	corner->SetTint(color4);
 	corner->SetWorldPos(GfxMath::Point2D(-5, -7));
+	corner->SetID(10);
 
 	// Now add all the pieces to the vector
 	pieces_.push_back(smallS);
@@ -244,6 +260,124 @@ void Solver::Shutdown()
 	textures_.clear();
 }
 
+void Solver::Reset()
+{
+	// Initialize the board
+	for (int i = 0; i < 6; ++i) {
+		board_[invalidPositions[i].x][invalidPositions[i].y] = -1;
+	}
+
+	// Make sure all pieces in placed are in pieces
+	while (!placed_.empty()) {
+		pieces_.push_back(placed_.back());
+		placed_.pop_back();
+	}
+
+	// Now make sure all orientations are reset
+	for (Object* obj : pieces_) {
+		// If object is mirrored, un-mirror it
+		if (obj->IsMirrored())
+			obj->Mirror();
+
+		// Rotate object back to original
+		while (obj->GetRot() > 0) {
+			obj->Rotate90();
+		}
+
+		// Set position to origin
+		obj->SetWorldPos(GfxMath::Point2D(0, 0));
+	}
+
+	// Reset the rec depth
+	recDepth_ = 0;
+}
+
+bool Solver::Solve(Month month, unsigned int day, DayOfWeek dayOfWeek)
+{
+	// Reset the board
+	Reset();
+
+	// Validate Month parameter
+	if (month > Month::DEC || month <= Month::MonthInvalid) {
+		std::cout << "Month Invalid, Can't Solve" << std::endl;
+		return false;
+	}
+
+	// Validate Day of Week parameter
+	if (dayOfWeek > DayOfWeek::SUN || dayOfWeek <= DayOfWeek::DayInvalid) {
+		std::cout << "Day of Week Invalid, Can't Solve" << std::endl;
+	}
+
+	// Validate Day
+	if (day == 0) {
+		std::cout << "Day Can't Be Zero!" << std::endl;
+		return false;
+	}
+
+	// Validate that day exists within month
+	if (month == Month::FEB) {
+
+		if (day > 29) {
+			std::cout << "Day Invalid" << std::endl;
+			return false;
+		}
+	}
+
+	else if (month % 2 == 0) {
+		if (day > 30) {
+			std::cout << "Day Invalid" << std::endl;
+			return false;
+		}
+	}
+
+	else {
+		if (day > 31) {
+			std::cout << "Day Invalid" << std::endl;
+			return false;
+		}
+	}
+
+	// Set the month space as invalid
+	int xPos = month % 6;
+	int yPos = (HEIGHT-1) - (month / 6);
+	board_[xPos][yPos] = -1;
+
+	// Set the day space as invalid
+	xPos = (day - 1) % 7;
+	yPos = (HEIGHT-3) - ((day - 1) / 7);
+	board_[xPos][yPos] = -1;
+
+	// Set the day of the week position
+	switch (dayOfWeek) {
+		case SUN:
+			board_[3][1] = -1;
+			break;
+		case MON:
+			board_[4][1] = -1;
+			break;
+		case TUE:
+			board_[5][1] = -1;
+			break;
+		case WED:
+			board_[6][1] = -1;
+			break;
+		case THU:
+			board_[4][0] = -1;
+			break;
+		case FRI:
+			board_[5][0] = -1;
+			break;
+		case SAT:
+			board_[6][0] = -1;
+			break;
+	}
+
+	// Now we are ready to attempt solving
+	bool result = SolveRec();
+	std::cout << "Done" << std::endl;
+	return result;
+}
+
 Object** Solver::GetBoard()
 {
 	if (tiles_.size() > 0)
@@ -267,6 +401,178 @@ Object** Solver::GetPieces()
 int Solver::GetPieceCount()
 {
 	return pieces_.size();
+}
+
+Object** Solver::GetPlacedPieces()
+{
+	if (placed_.size() > 0) {
+		return &placed_[0];
+	}
+	return nullptr;
+}
+
+int Solver::GetPlacedPieceCount()
+{
+	return placed_.size();
+}
+
+bool Solver::SolveRec()
+{
+	// Increment recursion
+	++recDepth_;
+
+	if (recDepth_ % 100 == 0) {
+		std::cout << "Solving..." << std::endl;
+	}
+
+	if (recDepth_ > 1000000000) {
+		throw std::runtime_error("Recursion went for too long");
+	}
+
+	// End check for recursion
+	if (pieces_.empty())
+		return true;
+
+	// Get the current piece to attempt to place
+	Object* curPiece = pieces_.back();
+
+	// First check for mirror or not
+	for (int m = 0; m < 2; ++m) {
+
+		// Now check for rotation
+		for (int r = 0; r < 4; ++r) {
+
+			// Check every position on the board
+			for (int pos = 0; pos < boardMax_; ++pos) {
+				// Calculate where the position actually is
+				int xPos = pos % WIDTH;
+				int yPos = pos / WIDTH;
+
+				// Get the cur Piece positions
+				const glm::vec4* objPositions = curPiece->GetPos();
+				int posCount = curPiece->GetPosCount();
+
+				// Valid flag
+				bool valid = true;
+
+				// Iterate over piece positions
+				for (int i = 0; i < posCount; ++i) {
+					// Get the current position and offsets
+					glm::vec4 curPos = objPositions[i];
+					int xOff = static_cast<int>(curPos.x);
+					int yOff = static_cast<int>(curPos.y);
+
+					// Check if anything is invalid
+					if (xPos + xOff >= WIDTH ||
+						xPos + xOff < 0 ||
+						yPos + yOff >= HEIGHT ||
+						yPos + yOff < 0)
+					{
+						valid = false;
+						break;
+					}
+
+					else if (board_[xPos + xOff][yPos + yOff] != 0) {
+						valid = false;
+						break;
+					}
+				}
+
+				// If piece is valid, place it and call recursion
+				if (valid) {
+					// Place Piece
+					PlacePiece(xPos, yPos);
+
+					// Render the current pieces
+					// RenderPlaced();
+
+					// Call Recursion
+					if (SolveRec())
+						return true;
+
+					// Remove Piece
+					RemovePiece();
+				}
+
+			}
+
+			// Remember to rotate for next go around
+			curPiece->Rotate90();
+		}
+
+		// Remember to mirror for next go around
+		curPiece->Mirror();
+	}
+
+	return false;
+}
+
+void Solver::PlacePiece(int xPos, int yPos)
+{
+	// Get back piece from available pieces
+	Object* pieceToPlace = pieces_.back();
+	pieces_.pop_back();
+
+	// Set position for rendering
+	pieceToPlace->SetWorldPos(GfxMath::Point2D(xPos, yPos));
+
+	// Get positions and position count
+	const glm::vec4* piecePos = pieceToPlace->GetPos();
+	int posCount = pieceToPlace->GetPosCount();
+	for (int i = 0; i < posCount; ++i) {
+		// Get current position and offsets
+		glm::vec4 curPos = piecePos[i];
+		int xOff = static_cast<int>(curPos.x);
+		int yOff = static_cast<int>(curPos.y);
+
+		// Set that value with the piece ID
+		board_[xPos + xOff][yPos + yOff] = pieceToPlace->GetID();
+	}
+
+	// Add the piece to the placed array
+	placed_.push_back(pieceToPlace);
+}
+
+void Solver::RemovePiece()
+{
+	// Get the piece from the placed vector to remove
+	Object* pieceToRemove = placed_.back();
+	placed_.pop_back();
+
+	// Get current piece info and reset the board
+	const glm::vec4* piecePos = pieceToRemove->GetPos();
+	int posCount = pieceToRemove->GetPosCount();
+	glm::vec4 curWorldPos = pieceToRemove->GetWorldPos();
+	int xPos = static_cast<int>(curWorldPos.x);
+	int yPos = static_cast<int>(curWorldPos.y);
+	for (int i = 0; i < posCount; ++i) {
+		// Get current position and offsets
+		glm::vec4 curPos = piecePos[i];
+		int xOff = static_cast<int>(curPos.x);
+		int yOff = static_cast<int>(curPos.y);
+
+		// Set that value with the piece ID
+		board_[xPos + xOff][yPos + yOff] = 0;
+	}
+
+	// Add the piece to the available pieces
+	pieces_.push_back(pieceToRemove);
+}
+
+void Solver::SetRenderer(Renderer* renderer)
+{
+	renderer_ = renderer;
+}
+
+void Solver::RenderPlaced()
+{
+	for (Object* obj : tiles_) {
+		renderer_->Render(obj);
+	}
+	for (Object* obj : placed_) {
+		renderer_->Render(obj);
+	}
+	renderer_->Update(0.0f);
 }
 
 //*****************************************************************************

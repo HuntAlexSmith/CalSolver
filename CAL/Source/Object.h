@@ -33,6 +33,13 @@ public:
 	void SetTexture(Texture* tex);
 
 	void Rotate90();
+	int GetRot();
+
+	void Mirror();
+	bool IsMirrored();
+
+	void SetID(unsigned id);
+	unsigned GetID();
 
 private:
 
@@ -49,5 +56,11 @@ private:
 
 	// Current rotation
 	int curRot_;
+
+	// Check if object is currently mirrored or not
+	bool mirrored_;
+
+	// ID for board placement
+	unsigned ID_;
 
 };

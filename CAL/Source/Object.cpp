@@ -18,6 +18,8 @@ Object::Object() :
 	, alpha_(1.0f)
 	, texture_(nullptr)
 	, curRot_(0)
+	, mirrored_(false)
+	, ID_(0)
 {
 }
 
@@ -85,7 +87,7 @@ void Object::SetTexture(Texture* tex)
 void Object::Rotate90()
 {
 	// Generate a rotation matrix
-	float rad90 = glm::radians(90.0f);
+	constexpr float rad90 = glm::radians(90.0f);
 	glm::mat4 rotMat(1);
 	rotMat[0][0] = cosf(rad90);
 	rotMat[0][1] = sinf(rad90);
@@ -106,6 +108,40 @@ void Object::Rotate90()
 	if (curRot_ >= 360) {
 		curRot_ = 0;
 	}
+}
+
+int Object::GetRot()
+{
+	return curRot_;
+}
+
+void Object::Mirror()
+{
+	// Mirror all the positions over the y-axis
+	int posCount = positions_.size();
+	for (int i = 0; i < posCount; ++i) {
+		glm::vec4 newPos = positions_[i];
+		newPos.x *= -1;
+		positions_[i] = newPos;
+	}
+
+	// Ternary for updating the mirrored value
+	mirrored_ ? mirrored_ = false : mirrored_ = true;
+}
+
+bool Object::IsMirrored()
+{
+	return mirrored_;
+}
+
+void Object::SetID(unsigned id)
+{
+	ID_ = id;
+}
+
+unsigned Object::GetID()
+{
+	return ID_;
 }
 
 //*****************************************************************************
