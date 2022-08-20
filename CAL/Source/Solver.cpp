@@ -13,6 +13,7 @@
 #include <random>
 #include <exception>
 
+// Static array for automatically invalid positions
 static glm::ivec2 invalidPositions[6] = {
 	glm::ivec2(0, 0),
 	glm::ivec2(1, 0),
@@ -22,6 +23,10 @@ static glm::ivec2 invalidPositions[6] = {
 	glm::ivec2(6, 7)
 };
 
+//*****************************************************************************
+//	Description
+//		Constructor for a solver object
+//*****************************************************************************
 Solver::Solver() :
 	tiles_()
 	, pieces_()
@@ -33,12 +38,20 @@ Solver::Solver() :
 {
 }
 
+//*****************************************************************************
+//	Description
+//		Destructor for a solver object
+//*****************************************************************************
 Solver::~Solver()
 {
 
 }
 
-// Member functions
+//*****************************************************************************
+//	Description
+//		Initialization function for a Solver object, which handles loading in
+//		textures for the board and creating the object pieces
+//*****************************************************************************
 void Solver::Initialize()
 {
 	// Initialize the board
@@ -246,6 +259,10 @@ void Solver::Initialize()
 	*/
 }
 
+//*****************************************************************************
+//	Description
+//		Shutdown the solver, unloading all the objects and textures loaded
+//*****************************************************************************
 void Solver::Shutdown()
 {
 	// Delete all the objects
@@ -273,8 +290,19 @@ void Solver::Shutdown()
 	textures_.clear();
 }
 
+//*****************************************************************************
+//	Description
+//		Resets the state of the solver, preparing it for another solution
+//*****************************************************************************
 void Solver::Reset()
 {
+	// Wipe the board clean
+	for (int i = 0; i < boardMax_; ++i) {
+		int xPos = i % WIDTH;
+		int yPos = i / WIDTH;
+		board_[xPos][yPos] = 0;
+	}
+
 	// Initialize the board
 	for (int i = 0; i < 6; ++i) {
 		board_[invalidPositions[i].x][invalidPositions[i].y] = -1;
@@ -305,6 +333,22 @@ void Solver::Reset()
 	recDepth_ = 0;
 }
 
+//*****************************************************************************
+//	Description
+//		Function that initializes a Solve given a month, day, and day of week
+// 
+//	Param month
+//		The month to solve for
+// 
+//	Param day
+//		The day to solve for
+// 
+//  Param dayOfWeek
+//		The day of the week to solve for
+// 
+//	Return
+//		Returns true if a solution was found, false otherwise
+//*****************************************************************************
 bool Solver::Solve(Month month, unsigned int day, DayOfWeek dayOfWeek)
 {
 	// Reset the board
@@ -391,6 +435,13 @@ bool Solver::Solve(Month month, unsigned int day, DayOfWeek dayOfWeek)
 	return result;
 }
 
+//*****************************************************************************
+//	Description
+//		Gets an array of all the objects representing the board
+// 
+//	Return
+//		A pointer to an array of pointers to Objects
+//*****************************************************************************
 Object** Solver::GetBoard()
 {
 	if (tiles_.size() > 0)
@@ -398,11 +449,25 @@ Object** Solver::GetBoard()
 	return nullptr;
 }
 
+//*****************************************************************************
+//	Description
+//		Gets how many objects there are for rendering the board
+// 
+//	Return
+//		An integer representing the number of objects used for the board
+//*****************************************************************************
 int Solver::GetBoardCount()
 {
 	return tiles_.size();
 }
 
+//*****************************************************************************
+//	Description
+//		Gets the pieces that have not been placed yet
+// 
+//	Return
+//		Returns a pointer to an array of pointers to Objects
+//*****************************************************************************
 Object** Solver::GetPieces()
 {
 	if (pieces_.size() > 0) {
@@ -411,11 +476,25 @@ Object** Solver::GetPieces()
 	return nullptr;
 }
 
+//*****************************************************************************
+//	Description
+//		Gets how many pieces have not been placed yet
+// 
+//	Return
+//		An integer representing the number of unplaced pieces
+//*****************************************************************************
 int Solver::GetPieceCount()
 {
 	return pieces_.size();
 }
 
+//*****************************************************************************
+//	Description
+//		Gets the pieces that have been placed in the puzzle
+// 
+//	Return
+//		A pointer to an array of pointers to Objects
+//*****************************************************************************
 Object** Solver::GetPlacedPieces()
 {
 	if (placed_.size() > 0) {
@@ -424,22 +503,34 @@ Object** Solver::GetPlacedPieces()
 	return nullptr;
 }
 
+//*****************************************************************************
+//	Description
+//		Gets the count of how many pieces have been placed
+// 
+//	Return
+//		SAY WHAT THE FUNCTION RETURNS IF NECESSARY
+//*****************************************************************************
 int Solver::GetPlacedPieceCount()
 {
 	return placed_.size();
 }
 
+//*****************************************************************************
+//	Description
+//		The recursive function used for solving the puzzle
+// 
+//	Return
+//		Returns true if a solution has been found, false otherwise
+//*****************************************************************************
 bool Solver::SolveRec()
 {
 	// Increment recursion
 	++recDepth_;
 
-	/*
-	if (recDepth_ == 10000) {
+	if (recDepth_ == 100) {
 		RenderPlaced();
 		recDepth_ = 0;
 	}
-	*/
 
 	// End check for recursion
 	if (pieces_.empty())
@@ -501,9 +592,6 @@ bool Solver::SolveRec()
 						continue;
 					}
 
-					// Render the current pieces
-					// RenderPlaced();
-
 					// Call Recursion
 					if (SolveRec())
 						return true;
@@ -522,9 +610,21 @@ bool Solver::SolveRec()
 		curPiece->Mirror();
 	}
 
+	// No place for the piece found, return false
 	return false;
 }
 
+//*****************************************************************************
+//	Description
+//		Places the piece at the back of the piece vector into the placed vector
+//		given the x position and y position
+// 
+//	Param xPos
+//		The x position to place the piece in
+// 
+//  Param yPos
+//		The y position to place the piece in
+//*****************************************************************************
 void Solver::PlacePiece(int xPos, int yPos)
 {
 	// Get back piece from available pieces
@@ -551,6 +651,11 @@ void Solver::PlacePiece(int xPos, int yPos)
 	placed_.push_back(pieceToPlace);
 }
 
+//*****************************************************************************
+//	Description
+//		Removes the piece at the back of the placed vector and puts it back in
+//		the piece vector
+//*****************************************************************************
 void Solver::RemovePiece()
 {
 	// Get the piece from the placed vector to remove
@@ -577,11 +682,24 @@ void Solver::RemovePiece()
 	pieces_.push_back(pieceToRemove);
 }
 
+//*****************************************************************************
+//	Description
+//		Tells the Solver what renderer is being used in order to render as
+//		a solution happens
+// 
+//  Param renderer
+//		A pointer to the renderer that will be used for rendering
+//*****************************************************************************
 void Solver::SetRenderer(Renderer* renderer)
 {
 	renderer_ = renderer;
 }
 
+//*****************************************************************************
+//	Description
+//		Tells the renderer to render everything that is currently placed on the
+//		board
+//*****************************************************************************
 void Solver::RenderPlaced()
 {
 	for (Object* obj : tiles_) {
@@ -593,6 +711,14 @@ void Solver::RenderPlaced()
 	renderer_->Update(0.0f);
 }
 
+//*****************************************************************************
+//	Description
+//		Helper function for checking for any island spaces, allowing for
+//		optimization of the algorithm
+// 
+//	Return
+//		True if there is an island piece, false otherwise
+//*****************************************************************************
 bool Solver::CheckForIsland()
 {
 	for (int i = 0; i < boardMax_; ++i) {
@@ -642,14 +768,3 @@ bool Solver::CheckForIsland()
 	}
 	return false;
 }
-
-//*****************************************************************************
-//	Description
-//		WRITE DESCRIPTION OF FUNCTION HERE
-// 
-//	Param MY_PARAM
-//		WRITE WHAT PARAMETER DOES
-// 
-//	Return
-//		SAY WHAT THE FUNCTION RETURNS IF NECESSARY
-//*****************************************************************************
