@@ -75,6 +75,8 @@ private:
 
 	void RenderPlaced();
 
+	bool CheckForIsland();
+
 	std::vector<Texture*> textures_;
 
 	std::vector<Object*> tiles_;

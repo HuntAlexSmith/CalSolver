@@ -254,6 +254,11 @@ void Solver::Shutdown()
 	}
 	pieces_.clear();
 
+	for (Object* obj : placed_) {
+		delete obj;
+	}
+	placed_.clear();
+
 	// Make sure to delete everything
 	int objCount = tiles_.size();
 	for (int i = 0; i < objCount; ++i) {
@@ -490,6 +495,12 @@ bool Solver::SolveRec()
 					// Place Piece
 					PlacePiece(xPos, yPos);
 
+					// Check if the piece placement was valid
+					if (CheckForIsland()) {
+						RemovePiece();
+						continue;
+					}
+
 					// Render the current pieces
 					// RenderPlaced();
 
@@ -580,6 +591,56 @@ void Solver::RenderPlaced()
 		renderer_->Render(obj);
 	}
 	renderer_->Update(0.0f);
+}
+
+bool Solver::CheckForIsland()
+{
+	for (int i = 0; i < boardMax_; ++i) {
+		// Calculate x and y positions
+		int xPos = i % WIDTH;
+		int yPos = i / WIDTH;
+
+		// First check if this space should be filled or not
+		if (board_[xPos][yPos] != 0)
+			continue;
+			
+		// Keep an array of the values nearby
+		int vals[4] = { -1 };
+
+		// Check Up
+		if (yPos + 1 < 0 || yPos + 1 >= HEIGHT)
+			vals[0] = -1;
+		else
+			vals[0] = board_[xPos][yPos+1];
+
+		// Check Right
+		if (xPos + 1 < 0 || xPos + 1 >= WIDTH)
+			vals[1] = -1;
+		else
+			vals[1] = board_[xPos+1][yPos];
+
+		// Check Down
+		if (yPos - 1 < 0 || yPos - 1 >= HEIGHT)
+			vals[2] = -1;
+		else
+			vals[2] = board_[xPos][yPos-1];
+
+		// Check Left
+		if (xPos - 1 < 0 || xPos - 1 >= WIDTH)
+			vals[3] = -1;
+		else
+			vals[3] = board_[xPos-1][yPos];
+
+		// Iterate over and see if this is an island
+		bool isIsland = true;
+		for (int j = 0; j < 4; ++j) {
+			if (vals[j] == 0)
+				isIsland = false;
+		}
+		if (isIsland)
+			return true;
+	}
+	return false;
 }
 
 //*****************************************************************************

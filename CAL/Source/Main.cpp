@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 
 		// Initiate the Solve
 		if(!solveDone)
-			solveDone = mySolver.Solve(Solver::Month::AUG, 29, Solver::DayOfWeek::MON);
+			solveDone = mySolver.Solve(Solver::Month::FEB, 20, Solver::DayOfWeek::SAT);
 	}
 
 	// Delete objects here
