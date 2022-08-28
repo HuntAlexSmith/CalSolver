@@ -31,6 +31,11 @@ Solver::Solver() :
 	tiles_()
 	, pieces_()
 	, placed_()
+	, buttons_()
+	, curSel_()
+	, monthSel_(0)
+	, daySel_(1)
+	, dayOfWeekSel_(SUN)
 	, board_{0}
 	, boardMax_(WIDTH*HEIGHT)
 	, recDepth_(0)
@@ -252,11 +257,131 @@ void Solver::Initialize()
 	pieces_.push_back(tPiece);
 	pieces_.push_back(corner);
 
+	// Create up and down textures
+	Texture* upArrow = new Texture("Up Arrow", "Assets/Done/UpArrow.png");
+	Texture* downArrow = new Texture("Down Arrow", "Assets/Done/DownArrow.png");
+
+	textures_.push_back(upArrow);
+	textures_.push_back(downArrow);
+
+	// Now create buttons
+	for (int i = 0; i < 3; ++i) {
+		Object* newButton = new Object();
+		newButton->SetTexture(upArrow);
+		newButton->AddPosition(GfxMath::Point2D(0, 0));
+		newButton->SetWorldPos(GfxMath::Point2D(-(i + 1) * 2, 4));
+		buttons_.push_back(newButton);
+	}
+
+	for (int i = 0; i < 3; ++i) {
+		Object* newButton = new Object();
+		newButton->SetTexture(downArrow);
+		newButton->AddPosition(GfxMath::Point2D(0, 0));
+		newButton->SetWorldPos(GfxMath::Point2D(-(i + 1) * 2, 2));
+		buttons_.push_back(newButton);
+	}
+
+	// Cur Month display
+	Object* curMonthObj = new Object();
+	curMonthObj->AddPosition(GfxMath::Point2D(0, 0));
+	curMonthObj->SetTexture(textures_[0]);
+	curMonthObj->SetWorldPos(GfxMath::Point2D(-6, 3));
+	curSel_.push_back(curMonthObj);
+
+	// Cur Day display
+	Object* curDayObj = new Object();
+	curDayObj->AddPosition(GfxMath::Point2D(0, 0));
+	curDayObj->SetTexture(textures_[12]);
+	curDayObj->SetWorldPos(GfxMath::Point2D(-4, 3));
+	curSel_.push_back(curDayObj);
+
+	// Cur Day Of Week display
+	Object* curDayOfWeekObj = new Object();
+	curDayOfWeekObj->AddPosition(GfxMath::Point2D(0, 0));
+	curDayOfWeekObj->SetTexture(textures_[43]);
+	curDayOfWeekObj->SetWorldPos(GfxMath::Point2D(-2, 3));
+	curSel_.push_back(curDayOfWeekObj);
+
 	/*
 	std::random_device rd;
 	auto rng = std::default_random_engine(rd());
 	std::shuffle(std::begin(pieces_), std::end(pieces_), rng);
 	*/
+}
+
+void Solver::Update(float dt)
+{
+	// Check for button inputs here
+	int numOfButtons = buttons_.size();
+	for (int i = 0; i < numOfButtons; ++i) {
+		// Get Mouse state
+		float mouseX, mouseY;
+		bool clicked = renderer_->GetMouseState(&mouseX, &mouseY);
+
+		// Check if hovering over button
+		glm::vec4 buttonPos = buttons_[i]->GetWorldPos();
+		if (mouseX < buttonPos.x + 0.5f &&
+			mouseX > buttonPos.x - 0.5f &&
+			mouseY < buttonPos.y + 0.5f &&
+			mouseY > buttonPos.y - 0.5f) {
+			buttons_[i]->SetTint(glm::vec3(0.3f));
+
+			// Check if button is clicked
+			if (clicked) {
+				buttons_[i]->SetTint(glm::vec3(0.7f));
+				switch (i) {
+					case 0:
+						++dayOfWeekSel_;
+						if (dayOfWeekSel_ > SAT)
+							dayOfWeekSel_ = SUN;
+						curSel_[2]->SetTexture(textures_[43 + dayOfWeekSel_]);
+						break;
+					case 1:
+						++daySel_;
+						if (daySel_ > 31)
+							daySel_ = 1;
+						curSel_[1]->SetTexture(textures_[11 + daySel_]);
+						break;
+					case 2:
+						++monthSel_;
+						if (monthSel_ > DEC)
+							monthSel_ = JAN;
+						curSel_[0]->SetTexture(textures_[monthSel_]);
+						break;
+					case 3:
+						--dayOfWeekSel_;
+						if (dayOfWeekSel_ == DayInvalid)
+							dayOfWeekSel_ = SAT;
+						curSel_[2]->SetTexture(textures_[43 + dayOfWeekSel_]);
+						break;
+					case 4:
+						--daySel_;
+						if (daySel_ == 0)
+							daySel_ = 31;
+						curSel_[1]->SetTexture(textures_[11 + daySel_]);
+						break;
+					case 5:
+						--monthSel_;
+						if (monthSel_ == MonthInvalid)
+							monthSel_ = DEC;
+						curSel_[0]->SetTexture(textures_[monthSel_]);
+						break;
+				};
+			}
+		}
+
+		else {
+			buttons_[i]->SetTint(glm::vec3(0.0f));
+		}
+	}
+
+	// Render things here
+	for (Object* button : buttons_) {
+		renderer_->Render(button);
+	}
+	for (Object* sel : curSel_) {
+		renderer_->Render(sel);
+	}
 }
 
 //*****************************************************************************
@@ -266,6 +391,16 @@ void Solver::Initialize()
 void Solver::Shutdown()
 {
 	// Delete all the objects
+	for (Object* sel : curSel_) {
+		delete sel;
+	}
+	curSel_.clear();
+
+	for (Object* button : buttons_) {
+		delete button;
+	}
+	buttons_.clear();
+
 	for (Object* obj : pieces_) {
 		delete obj;
 	}
@@ -361,8 +496,9 @@ bool Solver::Solve(Month month, unsigned int day, DayOfWeek dayOfWeek)
 	}
 
 	// Validate Day of Week parameter
-	if (dayOfWeek > DayOfWeek::SUN || dayOfWeek <= DayOfWeek::DayInvalid) {
+	if (dayOfWeek > DayOfWeek::SAT || dayOfWeek <= DayOfWeek::DayInvalid) {
 		std::cout << "Day of Week Invalid, Can't Solve" << std::endl;
+		return false;
 	}
 
 	// Validate Day
@@ -591,6 +727,9 @@ bool Solver::SolveRec()
 						RemovePiece();
 						continue;
 					}
+
+					// Render the move
+					// RenderPlaced();
 
 					// Call Recursion
 					if (SolveRec())

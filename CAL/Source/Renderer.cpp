@@ -26,8 +26,9 @@ Renderer::Renderer() : window_(nullptr)
 	, inputEvent_()
 	, squareVao_(0)
 	, shader_(nullptr)
-	, camera_(Camera(20.0f, 1280.0f/720.0f, GfxMath::Point2D(0, 0)))
+	, camera_(Camera(15.0f, 1280.0f/720.0f, GfxMath::Point2D(3, 3)))
 	, renderQueue_()
+	, lmbIsClicked(false)
 {
 }
 
@@ -184,11 +185,20 @@ void Renderer::Initialize()
 //*****************************************************************************
 void Renderer::Update(float dt)
 {
+	if (lmbIsClicked)
+		lmbIsClicked = false;
+
 	// Process inputs from user
 	while (SDL_PollEvent(&inputEvent_))
 	{
 		if (inputEvent_.type == SDL_QUIT)
 			isRunning_ = false;
+
+		if (inputEvent_.button.type == SDL_MOUSEBUTTONDOWN) {
+			if (inputEvent_.button.button == SDL_BUTTON_LEFT) {
+				lmbIsClicked = true;
+			}
+		}
 	}
 
 	// Clear the screen
@@ -320,4 +330,34 @@ void Renderer::Render(Object* obj)
 		dataToAdd.texture = tex;
 		renderQueue_.push(dataToAdd);
 	}
+}
+
+bool Renderer::GetMouseState(float* x, float* y)
+{
+	// Get the window coordinates of the mouse
+	int xPos;
+	int yPos;
+	SDL_GetMouseState(&xPos, &yPos);
+
+	// Screen coords to NDC
+	glm::mat4 screenToNDC = glm::mat4(
+		2.0f / width_, 0, 0, 0,
+		0, -2.0f / height_, 0, 0,
+		0, 0, 1, 0,
+		-1, 1, 0, 1
+	);
+
+	// NDC to Camera
+	glm::mat4 ndcToCam = GfxMath::AffineInverse(camera_.CamToNDC());
+
+	// Camera to World
+	glm::mat4 camToWorld = camera_.CamToWorld();
+
+	// Apply math to the positions
+	glm::vec4 worldPos = GfxMath::Point2D(xPos, yPos);
+	worldPos = camToWorld * ndcToCam * screenToNDC * worldPos;
+	*x = worldPos.x;
+	*y = worldPos.y;
+
+	return lmbIsClicked;
 }

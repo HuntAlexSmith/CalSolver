@@ -34,13 +34,13 @@ public:
 
 	enum DayOfWeek {
 		DayInvalid = -1,
+		SUN,
 		MON,
 		TUE,
 		WED,
 		THU,
 		FRI,
-		SAT,
-		SUN
+		SAT
 	};
 
 	// Constructor and Destructor
@@ -49,6 +49,7 @@ public:
 
 	// Member functions
 	void Initialize();
+	void Update(float dt);
 	void Shutdown();
 
 	void Reset();
@@ -82,6 +83,13 @@ private:
 	std::vector<Object*> tiles_;
 	std::vector<Object*> pieces_;
 	std::vector<Object*> placed_;
+
+	std::vector<Object*> buttons_;
+	std::vector<Object*> curSel_;
+
+	int monthSel_;
+	int daySel_;
+	int dayOfWeekSel_;
 
 	int board_[WIDTH][HEIGHT];
 	int boardMax_;

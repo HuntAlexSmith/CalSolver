@@ -51,8 +51,6 @@ int main(int argc, char* argv[]) {
 	// Initialize the solver
 	mySolver.Initialize();
 
-	// Create objects here
-
 	// Set background color
 	myRenderer.SetBackColor(0.5f, 0.5f, 0.5f);
 
@@ -79,13 +77,16 @@ int main(int argc, char* argv[]) {
 		}
 
 		// Render the objects
+
+		// Update the Solver
+		mySolver.Update(dt);
 		
 		// Update the renderer
 		myRenderer.Update(dt);
 
 		// Initiate the Solve
 		if(!solveDone)
-			solveDone = mySolver.Solve(Solver::Month::JAN, 17, Solver::DayOfWeek::WED);
+			solveDone = mySolver.Solve(Solver::Month::AUG, 24, Solver::DayOfWeek::WED);
 	}
 
 	// Delete objects here

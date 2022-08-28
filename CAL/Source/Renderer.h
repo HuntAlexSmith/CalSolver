@@ -58,6 +58,8 @@ public:
 
 	void Render(Object* obj);
 
+	bool GetMouseState(float* x, float* y);
+
 private:
 	// SDL things
 	SDL_Window* window_;
@@ -83,4 +85,7 @@ private:
 
 	// Render queue
 	std::queue<RenderData> renderQueue_;
+
+	// Check for left click
+	bool lmbIsClicked;
 };
