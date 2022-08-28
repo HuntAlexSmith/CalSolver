@@ -261,6 +261,9 @@ void Solver::Initialize()
 	Texture* upArrow = new Texture("Up Arrow", "Assets/Done/UpArrow.png");
 	Texture* downArrow = new Texture("Down Arrow", "Assets/Done/DownArrow.png");
 
+	// Create solve texture
+	Texture* solveText = new Texture("Solve", "Assets/Done/Solve.png");
+
 	textures_.push_back(upArrow);
 	textures_.push_back(downArrow);
 
@@ -269,7 +272,7 @@ void Solver::Initialize()
 		Object* newButton = new Object();
 		newButton->SetTexture(upArrow);
 		newButton->AddPosition(GfxMath::Point2D(0, 0));
-		newButton->SetWorldPos(GfxMath::Point2D(-(i + 1) * 2, 4));
+		newButton->SetWorldPos(GfxMath::Point2D(-(i + 1) * 2, 5));
 		buttons_.push_back(newButton);
 	}
 
@@ -277,29 +280,36 @@ void Solver::Initialize()
 		Object* newButton = new Object();
 		newButton->SetTexture(downArrow);
 		newButton->AddPosition(GfxMath::Point2D(0, 0));
-		newButton->SetWorldPos(GfxMath::Point2D(-(i + 1) * 2, 2));
+		newButton->SetWorldPos(GfxMath::Point2D(-(i + 1) * 2, 3));
 		buttons_.push_back(newButton);
 	}
+
+	// Solve Button
+	Object* solveButton = new Object();
+	solveButton->SetTexture(solveText);
+	solveButton->AddPosition(GfxMath::Point2D(0, 0));
+	solveButton->SetWorldPos(GfxMath::Point2D(-3, 1));
+	buttons_.push_back(solveButton);
 
 	// Cur Month display
 	Object* curMonthObj = new Object();
 	curMonthObj->AddPosition(GfxMath::Point2D(0, 0));
 	curMonthObj->SetTexture(textures_[0]);
-	curMonthObj->SetWorldPos(GfxMath::Point2D(-6, 3));
+	curMonthObj->SetWorldPos(GfxMath::Point2D(-6, 4));
 	curSel_.push_back(curMonthObj);
 
 	// Cur Day display
 	Object* curDayObj = new Object();
 	curDayObj->AddPosition(GfxMath::Point2D(0, 0));
 	curDayObj->SetTexture(textures_[12]);
-	curDayObj->SetWorldPos(GfxMath::Point2D(-4, 3));
+	curDayObj->SetWorldPos(GfxMath::Point2D(-4, 4));
 	curSel_.push_back(curDayObj);
 
 	// Cur Day Of Week display
 	Object* curDayOfWeekObj = new Object();
 	curDayOfWeekObj->AddPosition(GfxMath::Point2D(0, 0));
 	curDayOfWeekObj->SetTexture(textures_[43]);
-	curDayOfWeekObj->SetWorldPos(GfxMath::Point2D(-2, 3));
+	curDayOfWeekObj->SetWorldPos(GfxMath::Point2D(-2, 4));
 	curSel_.push_back(curDayOfWeekObj);
 
 	/*
@@ -365,6 +375,9 @@ void Solver::Update(float dt)
 						if (monthSel_ == MonthInvalid)
 							monthSel_ = DEC;
 						curSel_[0]->SetTexture(textures_[monthSel_]);
+						break;
+					case 6:
+						Solve(static_cast<Month>(monthSel_), daySel_, static_cast<DayOfWeek>(dayOfWeekSel_));
 						break;
 				};
 			}
