@@ -13,6 +13,8 @@
 #include <random>
 #include <exception>
 
+#define RENDER_DEPTH 100000
+
 // Static array for automatically invalid positions
 static glm::ivec2 invalidPositions[6] = {
 	glm::ivec2(0, 0),
@@ -676,7 +678,7 @@ bool Solver::SolveRec()
 	// Increment recursion
 	++recDepth_;
 
-	if (recDepth_ == 100) {
+	if (recDepth_ == RENDER_DEPTH) {
 		RenderPlaced();
 		recDepth_ = 0;
 	}
